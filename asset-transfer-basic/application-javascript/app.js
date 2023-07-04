@@ -151,6 +151,45 @@ async function main() {
 			result = await contract.evaluateTransaction('ReadAsset', 'asset1');
 			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
+			// ...
+
+			// TransferAsset transaction
+			console.log('\n--> Submit Transaction: TransferAsset, transfers ownership of a specific asset');
+			result=await contract.submitTransaction('TransferAsset', 'asset1', 'Brad');
+			console.log('*** Asset transfer transaction has been submitted');
+			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+
+			// LeaseAsset transaction
+			console.log('\n--> Submit Transaction: LeaseAsset, leases a specific asset for a period');
+			result=await contract.submitTransaction('LeaseAsset', 'asset2', 'Tomoko', '1 year');
+			console.log('*** Asset lease transaction has been submitted');
+			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+
+			// DepreciateAsset transaction
+			console.log('\n--> Submit Transaction: DepreciateAsset, depreciates the value of a specific asset');
+			result=await contract.submitTransaction('DepreciateAsset', 'asset3', '0.1');
+			console.log('*** Asset depreciation transaction has been submitted');
+			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+
+			// AssetValuation transaction
+			console.log('\n--> Submit Transaction: AssetValuation, updates the current market value of a specific asset');
+			result=await contract.submitTransaction('AssetValuation', 'asset4', '650');
+			console.log('*** Asset valuation transaction has been submitted');
+			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+
+
+			// Add the function calls here
+			console.log('\n--> Evaluate Transaction: GetAssetsByOwner, function returns all assets owned by a given owner');
+			result = await contract.evaluateTransaction('GetAssetsByOwner', 'Brad');
+			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+
+			console.log('\n--> Evaluate Transaction: GetAssetsByColor, function returns all assets of a given color');
+			result = await contract.evaluateTransaction('GetAssetsByColor', 'white');
+			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+
+// ...
+
+
 			try {
 				// How about we try a transactions where the executing chaincode throws an error
 				// Notice how the submitTransaction will throw an error containing the error thrown by the chaincode

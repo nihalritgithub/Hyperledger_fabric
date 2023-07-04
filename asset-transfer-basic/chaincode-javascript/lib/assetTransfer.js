@@ -141,6 +141,81 @@ class AssetTransfer extends Contract {
         await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
         return oldOwner;
     }
+    // GetAssetsByOwner returns all assets owned by a given owner
+            async GetAssetsByOwner(ctx, owner) {
+                const allResults = [];
+                const iterator = await ctx.stub.getStateByRange('', '');
+                let result = await iterator.next();
+                while (!result.done) {
+                    const strValue = Buffer.from(result.value.value.toString()).toString('utf8');
+                    let record;
+                    try {
+                        record = JSON.parse(strValue);
+                    } catch (err) {
+                        console.log(err);
+                        record = strValue;
+                    }
+                    if (record.Owner === owner) {
+                        allResults.push(record);
+                    }
+                    result = await iterator.next();
+                }
+                return JSON.stringify(allResults);
+            }
+
+            async TransferAsset(ctx, assetId, newOwner) {
+                const assetString = await this.ReadAsset(ctx, assetId);
+                const asset = JSON.parse(assetString);
+                asset.owner = newOwner;
+                await ctx.stub.putState(assetId, Buffer.from(JSON.stringify(asset)));
+                return JSON.stringify(asset);
+            }
+            async LeaseAsset(ctx, assetId, leasee, leasePeriod) {
+                const assetString = await this.ReadAsset(ctx, assetId);
+                const asset = JSON.parse(assetString);
+                asset.leasee = leasee;
+                asset.leasePeriod = leasePeriod;
+                await ctx.stub.putState(assetId, Buffer.from(JSON.stringify(asset)));
+                return JSON.stringify(asset);
+            }
+            async DepreciateAsset(ctx, assetId, depreciationRate) {
+                const assetString = await this.ReadAsset(ctx, assetId);
+                const asset = JSON.parse(assetString);
+                asset.value = asset.value - (asset.value * depreciationRate);
+                await ctx.stub.putState(assetId, Buffer.from(JSON.stringify(asset)));
+                return JSON.stringify(asset);
+            }
+            async AssetValuation(ctx, assetId, currentMarketValue) {
+                const assetString = await this.ReadAsset(ctx, assetId);
+                const asset = JSON.parse(assetString);
+                asset.currentMarketValue = currentMarketValue;
+                await ctx.stub.putState(assetId, Buffer.from(JSON.stringify(asset)));
+                return JSON.stringify(asset);
+            }
+
+
+            // GetAssetsByColor returns all assets of a given color
+            async GetAssetsByColor(ctx, color) {
+                const allResults = [];
+                const iterator = await ctx.stub.getStateByRange('', '');
+                let result = await iterator.next();
+                while (!result.done) {
+                    const strValue = Buffer.from(result.value.value.toString()).toString('utf8');
+                    let record;
+                    try {
+                        record = JSON.parse(strValue);
+                    } catch (err) {
+                        console.log(err);
+                        record = strValue;
+                    }
+                    if (record.Color === color) {
+                        allResults.push(record);
+                    }
+                    result = await iterator.next();
+                }
+                return JSON.stringify(allResults);
+            }
+
 
     // GetAllAssets returns all assets found in the world state.
     async GetAllAssets(ctx) {
